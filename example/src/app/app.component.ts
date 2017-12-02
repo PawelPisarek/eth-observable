@@ -1,8 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {AppState, EthObservable, YoursAccounts} from "./eth-observable/eth-observable.service";
-import {PingComponent} from "./ping/ping.component";
 import {default as Web3} from "web3";
-import {PongComponent} from "./pong/pong.component";
 
 @Component({
   selector: 'app-root',
@@ -12,9 +10,6 @@ import {PongComponent} from "./pong/pong.component";
 export class AppComponent {
   accounts: number[];
   account: number;
-  @ViewChild(PingComponent) ping: PingComponent;
-  @ViewChild(PongComponent) pong: PongComponent;
-
   constructor(private _ethObservable: EthObservable) {
   }
 
@@ -43,8 +38,6 @@ export class AppComponent {
           return contractEnum;
         })
         .subscribe();
-      this.ping.initialize(appState).subscribe();
-      this.pong.initialize(appState).subscribe();
     });
   }
 }
