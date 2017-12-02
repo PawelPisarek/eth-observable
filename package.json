@@ -1,0 +1,27 @@
+{
+  "name": "eth-observable",
+  "version": "1.0.0",
+  "description": "observable ethereum wraper",
+  "main": "index.ts",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PawelPisarek/eth-observable.git"
+  },
+  "keywords": [
+    "ethereum",
+    "web3",
+    "observable"
+  ],
+  "author": "Pawel Pisarek",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PawelPisarek/eth-observable/issues"
+  },
+  "homepage": "https://github.com/PawelPisarek/eth-observable#readme"
+}

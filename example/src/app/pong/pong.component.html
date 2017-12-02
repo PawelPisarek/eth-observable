@@ -1,0 +1,9 @@
+<article class="contract">
+  <div class="account"> account: {{ pong?.staticData.creator}} value: {{pong?.staticData.pongval}}</div>
+  <h1>Change the value</h1>
+  <div>
+    <label for="amount">New value: </label>
+    <input [(ngModel)]="amount" type="number" placeholder="e.g. 25"/>
+  </div>
+  <button (click)="onSubmit()">Send</button>
+</article>
