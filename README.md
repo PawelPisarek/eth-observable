@@ -147,7 +147,7 @@ export class AppComponent {
 
 ```
 ```
-{{ pong?.deployed.address}}
+{{ ping?.staticData.address  }}
 ```
 
 
