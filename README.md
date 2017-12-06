@@ -1,4 +1,10 @@
 # eth-observable
+# Installation
+
+`npm install eth-observable --save`
+
+# Example:
+https://github.com/PawelPisarek/truffle-angular-starter
 
 ##  1. Create service to manage smart contract
 
