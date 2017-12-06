@@ -1,4 +1,8 @@
 # eth-observable
+
+Wraper to _web3_ to instatly reload data from _smart contract_ :tada:
+
+
 # Installation
 
 `npm install eth-observable --save`
