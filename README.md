@@ -10,7 +10,44 @@ Wraper to _web3_ to instatly reload data from _smart contract_ :tada:
 # Example:
 https://github.com/PawelPisarek/truffle-angular-starter
 
-##  1. Create service to manage smart contract
+## 2 Create static and deployed class and interface
+### eg PongStaticData, PongDeployed, PongContract
+```
+export class PongStaticData {
+  constructor(public pongval: string, public creator: string) {
+  }
+}
+export interface PongDeployed extends TruffleContract {
+  pongval
+  getAddress;
+  getPongvalTransactional()
+  getPongvalConstant()
+
+  setPongval(_pongval, from)
+  getPongvalTxRetrievalAttempted()
+
+
+  kill()
+}
+
+
+export class PongContract implements ContractValues<PongDeployed, PongStaticData> {
+
+  constructor(public deployed: PongDeployed, public contract: PongStaticData) {
+  }
+
+  getDeployed(): PongDeployed {
+    return this.deployed;
+  }
+
+  getStaticData(): PongStaticData {
+    return this.contract;
+  }
+}
+```
+
+
+##  3. Create service to manage smart contract
 
 ```
 import {InitializeContract, DeployedAndStaticData, ValuesContract, EthObservable, initializeContractHelper,
@@ -68,7 +105,7 @@ export class MyOwnAccount implements YoursAccounts<number> {
 
 ```
 
-## 3. Create enum to represent refresh smartcontract data. Every smartcontract service has own enum
+## 1. Create enum to represent refresh smartcontract data. Every smartcontract service has own enum
 ```
 export enum ContractEnum {
   PING, PONG
