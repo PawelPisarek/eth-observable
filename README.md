@@ -10,7 +10,14 @@ Wraper to _web3_ to instatly reload data from _smart contract_ :tada:
 # Example:
 https://github.com/PawelPisarek/truffle-angular-starter
 
-## 2 Create static and deployed class and interface
+## 1. Create enum to represent smartcontract data. Every smartcontract service has own enum
+```
+export enum ContractEnum {
+  PING, PONG
+}
+```
+
+## 2 Create staticData, deployed interface and ContractValues class
 ### eg PongStaticData, PongDeployed, PongContract
 ```
 export class PongStaticData {
@@ -22,14 +29,10 @@ export interface PongDeployed extends TruffleContract {
   getAddress;
   getPongvalTransactional()
   getPongvalConstant()
-
   setPongval(_pongval, from)
   getPongvalTxRetrievalAttempted()
-
-
   kill()
 }
-
 
 export class PongContract implements ContractValues<PongDeployed, PongStaticData> {
 
@@ -48,8 +51,8 @@ export class PongContract implements ContractValues<PongDeployed, PongStaticData
 
 
 ##  3. Create service to manage smart contract
-
 ```
+import {default as Web3} from "web3";
 import {InitializeContract, DeployedAndStaticData, ValuesContract, EthObservable, initializeContractHelper,
   hideValuesHelper,
   AppState,
@@ -58,19 +61,16 @@ import * as pong_artifacts from "../../../build/contracts/Pong.json";
 
 @Injectable()
 export class PongService implements InitializeContract<ContractEnum>, ValuesContract<PongDeployed, PongStaticData> {
-  private pongSource = new Subject<DeployedAndStaticData<PongDeployed, PongStaticData, MyOwnAccount>>();
+  private pongSource = new Subject<DeployedAndStaticData<PongDeployed, PongStaticData, string>>();
   pong$ = this.pongSource.asObservable();
-
   public dependsOnModifier = [true, true];
 
   constructor() {
   }
 
-
   getUniqueName(): ContractEnum {
     return ContractEnum.PONG;
   }
-
 
   initialize(contractFactoryService: EthObservable, contractsEnum: InitializeContract<ContractEnum>, app: AppState): Observable<any> {
     return initializeContractHelper(contractFactoryService, this, this, pong_artifacts, this.pongSource, app);
@@ -79,7 +79,6 @@ export class PongService implements InitializeContract<ContractEnum>, ValuesCont
   hideValues(array: any[]): any[] {
     return hideValuesHelper(array, this.dependsOnModifier);
   }
-
 
   getContractValuesPromise(deployed: PongDeployed, web3: Web3, hideVal: InitializeContract<any>): Promise<ContractValues<PongDeployed, PongStaticData>> {
     const values = [deployed.pongval, deployed.getAddress.call()];
@@ -90,42 +89,38 @@ export class PongService implements InitializeContract<ContractEnum>, ValuesCont
   }
 }
 ```
-## 2. Create class to data from web3 
-### eg. accounts
-```
-export class MyOwnAccount implements YoursAccounts<number> {
 
-  constructor(public accounts: number) {
+## 4. Enjoy observable data from smart contract
+```
+ export class ContractSenderComponent implements OnInit {
+  pong: DeployedAndStaticData<PongDeployed, PongStaticData, string>;
+  amount: number;
+
+  constructor(public _ethObservable: EthObservable, private _pongService: PongService) {
   }
 
-  getAccounts(): any {
-    return this.accounts;
+  ngOnInit() {
+    this._pongService.pong$.subscribe((data) => {
+      this.pong = data;
+    });
+  }
+
+  onSubmit() {
+    this.pong.deployed.setPongval(this.amount, {from: this.pong.yoursAccounts});
+    this._ethObservable.refresh(this._pongService);
+  }
+
+  initialize(appState: AppState) {
+    return this._pongService.initialize(this._ethObservable, this._pongService, appState);
   }
 }
 
 ```
 
-## 1. Create enum to represent refresh smartcontract data. Every smartcontract service has own enum
-```
-export enum ContractEnum {
-  PING, PONG
-}
-```
-
-
-## 4. Resolve first time promise
+## 5. Initialize all data
 ```
 export class AppComponent {
-  accounts: number[];
-  account: number;
-  @ViewChild(ContractCheckerComponent) ping: ContractCheckerComponent;
-  @ViewChild(ContractSenderComponent) pong: ContractSenderComponent;
-
-  constructor(private _ethObservable: EthObservable) {
-  }
-
-  ngOnInit(): void {
-    this._ethObservable.createConnection(new Web3(new Web3.providers.HttpProvider('http://localhost:9545')));
+    this._ethObservable.createConnection(new Web3(new Web3.providers.HttpProvider('http://localhost:8545')));
     new Promise(res => {
       this._ethObservable.web3.eth.getAccounts((err, accs) => {
         if (err != null) {
@@ -141,8 +136,8 @@ export class AppComponent {
         console.dir(this.accounts);
         return res(this.account);
       });
-    }).then((k: number) => {
-      const appState = new AppState(new Map(), new Map(), new Map(), new MyOwnAccount(k));
+    }).then((k: string) => {
+      const appState = new AppState(new Map(), new Map(), new Map(), k);
       this._ethObservable.getAccounts()
         .map(contractEnum => {
           this._ethObservable.getContract(appState.mapAllContractFunction.get(contractEnum), appState);
@@ -156,33 +151,6 @@ export class AppComponent {
 }
 ```
 
-## 5. Enjoy observable data from smart contract
-```
- export class ContractSenderComponent implements OnInit {
-  pong: DeployedAndStaticData<PongDeployed, PongStaticData, MyOwnAccount>;
-  amount: number;
-
-  constructor(public _ethObservable: EthObservable, private _pongService: PongService) {
-  }
-
-  ngOnInit() {
-    this._pongService.pong$.subscribe((data) => {
-      this.pong = data;
-    });
-  }
-
-  onSubmit() {
-    this.pong.deployed.setPongval(this.amount, {from: this.pong.yoursAccounts.getAccounts()});
-    this._ethObservable.refresh(this._pongService);
-  }
-
-
-  initialize(appState: AppState) {
-    return this._pongService.initialize(this._ethObservable, this._pongService, appState);
-  }
-}
-
-```
 ```
 {{ ping?.staticData.address  }}
 ```
