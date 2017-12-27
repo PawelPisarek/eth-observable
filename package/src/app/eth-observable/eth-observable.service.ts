@@ -45,7 +45,7 @@ export class EthObservable {
     app.mapAllContractImports.get(contract.contractEnum.getUniqueName())
       .deployed()
       .then((contractJson: any) =>
-        contract.contractValues.getContractValuesPromise(contractJson, this.web3, contract.contractEnum))
+        contract.contractValues.getContractValuesPromise(contractJson, this.web3, contract.contractEnum, app.account))
       .then((contractData: ContractValues<any, any>) =>
         new DeployedAndStaticData(contractData.getDeployed(), contractData.getStaticData(), app.account))
       .then((solidityModel: DeployedAndStaticData<any, any, any>) => {
@@ -56,11 +56,11 @@ export class EthObservable {
 }
 
 export class DeployedAndStaticData<D, SD, YA> {
-  constructor(public deployed: D, public staticData: SD, public yoursAccounts: YoursAccounts<YA>) {
+  constructor(public deployed: D, public staticData: SD, public yoursAccounts: YA) {
   }
 
   getYourAccount(): YA {
-    return this.yoursAccounts.getAccounts();
+    return this.yoursAccounts;
   }
 }
 
@@ -89,6 +89,6 @@ export class AppState {
   constructor(public mapAllContractImports: Map<string, any>,
               public mapAllContract: Map<string, any>,
               public mapAllContractFunction: Map<string, ContractFunction>,
-              public account: YoursAccounts<any>) {
+              public account: string) {
   }
 }

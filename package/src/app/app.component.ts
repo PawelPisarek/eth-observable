@@ -30,8 +30,8 @@ export class AppComponent {
         console.dir(this.accounts);
         return res(this.account);
       });
-    }).then((k: number) => {
-      const appState = new AppState(new Map(), new Map(), new Map(), new MyOwnAccount(k));
+    }).then((k: string) => {
+      const appState = new AppState(new Map(), new Map(), new Map(), k);
       this._ethObservable.getAccounts()
         .map(contractEnum => {
           this._ethObservable.getContract(appState.mapAllContractFunction.get(contractEnum), appState);
@@ -39,16 +39,6 @@ export class AppComponent {
         })
         .subscribe();
     });
-  }
-}
-
-export class MyOwnAccount implements YoursAccounts<number> {
-
-  constructor(public accounts: number) {
-  }
-
-  getAccounts(): any {
-    return this.accounts;
   }
 }
 
